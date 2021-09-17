@@ -20,9 +20,6 @@ Such modelling ignores the time-dependance of the failure event and create scena
 
 A landmark analysis is an approach that adequately circumvent this issue by resetting the analysis time after one or more specified timepoints after which only surviving statistical units are included. As such, only statistical units with comparable survivorship status at the landmark time are compared within each landmark epoch.  
 
-The choice of the landmark time(s) is often a matter of clinical consideration and in the context of immortal-time bias is chosen to coincide with the value equivalent in analysis-time at which knowledge acquisition of the group membership occurs.
-
-
 
 Installation
 ------------
