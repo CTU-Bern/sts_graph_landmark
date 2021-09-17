@@ -3,7 +3,8 @@ Easily create Landmark Analysis graphs in Stata
 
 _v. 1.1.0_  
 
-![image](https://user-images.githubusercontent.com/22870774/133729218-29766d91-3520-49b2-a820-bcd0a5ad05e4.png)
+![image](https://user-images.githubusercontent.com/22870774/133729652-f44a595b-cd5b-49a5-95e7-f83561ea4a1c.png)
+
 
 
 
