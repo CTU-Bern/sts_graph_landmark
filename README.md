@@ -59,5 +59,5 @@ Author
 
 **Arnaud Künzi**  
 CTU Bern  
-arnaud.kuenzi@ctu.unibe.ch 
+arnaud.kuenzi@ctu.unibe.ch  
 <https://github.com/CTU-Bern/sts_graph_landmark>  
