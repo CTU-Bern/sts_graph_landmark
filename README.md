@@ -47,6 +47,12 @@ Example
 	# create landmark plot and table 
 	sts_graph_landmark, at(100) by(posttran)
 	
+Help and documentation
+----------------------
+
+	# run the following command:
+	help sts_graph_landmark
+
 
 Author
 ------
