@@ -1,0 +1,9 @@
+v 1.1.0
+d Materials by Arnaud Künzi
+d CTU bern, Bern University
+d arnaud.kuenzi@ctu.unibe.ch
+d https://www.ctu.unibe.ch/about_us/staff/kuenzi_arnaud/index_eng.html
+
+d 'sts_graph_landmark': Easily create Landmark Analysis graphs in Stata
+
+p sts_graph_landmark
