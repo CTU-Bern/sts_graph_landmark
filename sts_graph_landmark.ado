@@ -239,7 +239,9 @@ program define sts_graph_landmark
 		local cname
 	}
 	
-	
+	if (`"`risktableopts'"' == ""){
+		local symbol `"█"'
+	}
 
 	if ("`tbl_title_pos'" == ""){
 		local tbl_title_pos = -20
