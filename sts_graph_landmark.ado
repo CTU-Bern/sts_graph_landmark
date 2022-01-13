@@ -2,7 +2,7 @@
 ********************************************************************************	
 	Name:		sts_graph_landmark
 	Author:		Arnaud Künzi (arnaud.kuenzi@ctu.unibe.ch)
-	Version:	1.1.0
+	Version:	1.1.1
 	Creation:	2020.09.01
 	Last edit:	2022.01.13
 	Description:
@@ -18,6 +18,10 @@
 	-1.1.1 ON 2022.01.13
 	
 		- Fixed bug where execution failed when max follow-up time was not an integer.
+		- Fixed graphing bug when an observation time was below from the previous offset of 0.001
+		  Offset was changed to epsilon = 1.0x-1b (see bulletpoint 9.6 at
+		  https://blog.stata.com/2012/04/02/the-penultimate-guide-to-precision/#section9)
+		- Added undocumented keepplotdata option
 	
 	-1.1.0 ON 2021.08.31
 	
@@ -67,7 +71,7 @@ program define sts_graph_landmark
 
 	version 16
 	
-	syntax [varlist(default=none)] [if] [in], [at(numlist >0) FAILure(varname) TItle(string) id(varname) by(varname) end(numlist max=1) YLABel(passthru) XLABel(passthru) LCOLors(string) RISKtable EVents risktableopts(string) SCale(real 0.8) FRFrom(string) usercmd(string) stsetopts(string) stslistopts(string) SHOWcmd *]
+	syntax [varlist(default=none)] [if] [in], [at(numlist >0) FAILure(varname) TItle(string) id(varname) by(varname) end(numlist max=1) YLABel(passthru) XLABel(passthru) LCOLors(string) RISKtable EVents risktableopts(string) SCale(real 0.8) FRFrom(string) usercmd(string) stsetopts(string) stslistopts(string) SHOWcmd KEEPplotdata *]
 
 	************* PARSING PARAMETERS AND SETTING DEFAULT VALUES *************
 	if ("`by'"		== ""){
@@ -412,13 +416,15 @@ program define sts_graph_landmark
 			
 			*coalesce data
 			use "`lmfig_0'", replace
-
+			
+			local epsilon = 1.0x-1b
+			
 			foreach i of numlist 0 `at' {
 				
 				foreach level of local by_lvls {
 					insobs 1, after(_N)
 					replace failure = 0 in l
-					replace time = cond(`i' == 0, 0, `i'.0011) in l
+					replace time = cond(`i' == 0, 0, `i' + `epsilon') in l
 					replace `by' = `level' in l
 				}
 				
@@ -431,14 +437,16 @@ program define sts_graph_landmark
 			*separate KM curves per landmark-period and bygroups
 			forvalues i = 1/`=`nat'+1' {	//for each `at' (landmark timepoints)
 			
-				local lb = `:word `i' 		of `atend''+.001
-				local ub = `:word `=`i'+1'	of `atend''+.001
-				if (`i'==1) local dis_cond  time <= `ub'
+				local lb = `:word `i' 		of `atend'' + `epsilon'
+				local ub = `:word `=`i'+1'	of `atend'' + `epsilon'
+				if (`i'==1) local dis_cond  time <= `ub' & !missing(`ub')
 				else		local dis_cond  inrange(time,`lb', `ub')
 				
 				forvalues j = 1/`nlevels' { //for each `level' (by groups)
 					local clevel : word `j' of `by_lvls'
 					gen failure`i'`j' = failure if  `dis_cond' & ( (time == `lb' & missing(`by')) | `by' == `clevel')
+					replace failure`i'`j' = failure`i'`j'[_n-1] if  failure`i'`j' == 0 & missing(failure`i'`j'[_n+1])
+					
 				}
 			}
 
@@ -524,6 +532,12 @@ program define sts_graph_landmark
 	*drop working frame
 	frame change default
 	*frame drop frworking
+	
+	if("`keepplotdata'" != ""){
+		frame copy `frworking' sts_graph_data, replace
+		di "Plotting data available in frame sts_graph_data"
+		
+	}
 	
 end
 
