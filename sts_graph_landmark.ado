@@ -2,7 +2,7 @@
 ********************************************************************************	
 	Name:		sts_graph_landmark
 	Author:		Arnaud Künzi (arnaud.kuenzi@ctu.unibe.ch)
-	Version:	1.1.1
+	Version:	1.1.2
 	Creation:	2020.09.01
 	Last edit:	2022.01.13
 	Description:
@@ -14,6 +14,10 @@
 		temporary variable __00008.
 
 	Changelog:
+	
+	-1.1.2 ON 2022.01.13
+		- Fixed bug where option symbol() could not be invoked without 
+		  labjustification() in risktableopts().
 	
 	-1.1.1 ON 2022.01.13
 	
@@ -201,32 +205,35 @@ program define sts_graph_landmark
 				*remove the labjustification() parameter from the current option string as we have now parsed it.
 				local copt `=regexr(`"`copt'"',"labjustification\(left\)|labjustification\(right\)","")'
 				
-				*define the symbol in the key
-				if ("`cname'" == "tbl_labels" ){
-					if (regexm(`"`copt'"',`"(symbol\()([^)]+)(\))"')){
-						local match `"`=regexs(2)'"'
-						local match: list clean match
-						
-						*if it is a number, then it's the position in the following symbol list
-						if real(`"`match'"') != . {
-							local symbolnum = round(real("`match'"))
-							local symbol: word `symbolnum' of █ {&bull} ⬤ ⚫ //add here more symbols separated by space.
-						}
-						else{
-							*else we just take the content of `match' as the symbol.
-							local symbol `"`match'"'
-						}
-						*remove the symbol() parameter from the current option string as we have now parsed it.
-						local copt `"`=regexr(`"`copt'"',`"symbol\([^)]+\)"',"")'"'
-					}
-					else{
-						local symbol `"█"'
-					}
-				}
+
 			}
 			else{
 				local `cname'_just labjustification(right)
 			}
+			
+			*define the symbol in the key
+			if ("`cname'" == "tbl_labels" ){
+				if (regexm(`"`copt'"',`"(symbol\()([^)]+)(\))"')){
+					local match `"`=regexs(2)'"'
+					local match: list clean match
+					
+					*if it is a number, then it's the position in the following symbol list
+					if real(`"`match'"') != . {
+						local symbolnum = round(real("`match'"))
+						local symbol: word `symbolnum' of █ {&bull} ⬤ ⚫ //add here more symbols separated by space.
+					}
+					else{
+						*else we just take the content of `match' as the symbol.
+						local symbol `"`match'"'
+					}
+					*remove the symbol() parameter from the current option string as we have now parsed it.
+					local copt `"`=regexr(`"`copt'"',`"symbol\([^)]+\)"',"")'"'
+				}
+				else{
+					local symbol `"█"'
+				}
+			}
+				
 			*store options and positions
 			local `cname'_opts `copt'
 			local `cname'_pos `cpos'
@@ -240,7 +247,7 @@ program define sts_graph_landmark
 		local cname
 	}
 	
-	if (`"`risktableopts'"' == ""){
+	if (`"`symbol'"' == ""){
 		local symbol `"█"'
 	}
 
