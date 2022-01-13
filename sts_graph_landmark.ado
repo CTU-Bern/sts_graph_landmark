@@ -21,6 +21,7 @@
 		- Fixed graphing bug when an observation time was below from the previous offset of 0.001
 		  Offset was changed to epsilon = 1.0x-1b (see bulletpoint 9.6 at
 		  https://blog.stata.com/2012/04/02/the-penultimate-guide-to-precision/#section9)
+		- Fixed bug where execution failed when numlist in at() had non-integer values
 		- Added undocumented keepplotdata option
 	
 	-1.1.0 ON 2021.08.31
@@ -370,8 +371,9 @@ program define sts_graph_landmark
 			cap mat drop _r*
 			
 			preserve
-			foreach i of numlist 0 `at' {   
-				tempfile lmfig_`i'                     
+			foreach i of numlist 0 `at' { 
+			    local ii: subinstr local i "." "pt"
+				tempfile lmfig_`ii'                     
 				keep if indicator == `i'
 				replace `failure' = 0 if `failure' != 1
 				
@@ -400,7 +402,7 @@ program define sts_graph_landmark
 					
 					
 				*save sts list
-				sts list, `byby' failure saving("`lmfig_`i''", replace) `stslistopts'
+				sts list, `byby' failure saving("`lmfig_`ii''", replace) `stslistopts'
 				restore, preserve
 			}
 			
@@ -430,7 +432,7 @@ program define sts_graph_landmark
 					replace `by' = `level' in l
 				}
 				
-				if `i'> 0 append using "`lmfig_`i''"
+				if `i'> 0 append using "`lmfig_`ii''"
 				
 			}
 			replace failure=failure*100
