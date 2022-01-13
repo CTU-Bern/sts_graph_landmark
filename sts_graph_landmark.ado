@@ -372,7 +372,7 @@ program define sts_graph_landmark
 			
 			preserve
 			foreach i of numlist 0 `at' { 
-			    local ii: subinstr local i "." "pt"
+			    local ii: subinstr local i "." "pt" //necessary when at() numlist contains non-integers
 				tempfile lmfig_`ii'                     
 				keep if indicator == `i'
 				replace `failure' = 0 if `failure' != 1
@@ -424,7 +424,7 @@ program define sts_graph_landmark
 			local epsilon = 1.0x-1b
 			
 			foreach i of numlist 0 `at' {
-				
+				local ii: subinstr local i "." "pt" //necessary when at() numlist contains non-integers
 				foreach level of local by_lvls {
 					insobs 1, after(_N)
 					replace failure = 0 in l
@@ -443,7 +443,7 @@ program define sts_graph_landmark
 			
 				local lb = `:word `i' 		of `atend'' + `epsilon'
 				local ub = `:word `=`i'+1'	of `atend'' + `epsilon'
-				if (`i'==1) local dis_cond  time <= `ub' & !missing(`ub')
+				if (`i'==1) local dis_cond  time <= `ub'
 				else		local dis_cond  inrange(time,`lb', `ub')
 				
 				forvalues j = 1/`nlevels' { //for each `level' (by groups)
