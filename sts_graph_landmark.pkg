@@ -1,9 +1,9 @@
-v 1.1.0
+v 1.1.1
 d 'STS_GRAPH_LANDMARK': sts graph landmark
 d 
 d Easily create Landmark Analysis graphs in Stata
 d 
-d Distribution-Date:   20211109
+d Distribution-Date:   20220113
 d License: GNU General Public License v3.0
 d 
 F sts_graph_landmark.ado
