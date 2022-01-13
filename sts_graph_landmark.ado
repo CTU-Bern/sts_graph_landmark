@@ -4,7 +4,7 @@
 	Author:		Arnaud Künzi (arnaud.kuenzi@ctu.unibe.ch)
 	Version:	1.1.0
 	Creation:	2020.09.01
-	Last edit:	2021.08.31
+	Last edit:	2022.01.13
 	Description:
 		
 	Comments:
@@ -14,6 +14,10 @@
 		temporary variable __00008.
 
 	Changelog:
+	
+	-1.1.1 ON 2022.01.13
+	
+		- Fixed bug where execution failed when max follow-up time was not an integer.
 	
 	-1.1.0 ON 2021.08.31
 	
@@ -427,8 +431,8 @@ program define sts_graph_landmark
 			*separate KM curves per landmark-period and bygroups
 			forvalues i = 1/`=`nat'+1' {	//for each `at' (landmark timepoints)
 			
-				local lb `:word `i' 		of `atend''.001
-				local ub `:word `=`i'+1'	of `atend''.001
+				local lb = `:word `i' 		of `atend''+.001
+				local ub = `:word `=`i'+1'	of `atend''+.001
 				if (`i'==1) local dis_cond  time <= `ub'
 				else		local dis_cond  inrange(time,`lb', `ub')
 				
