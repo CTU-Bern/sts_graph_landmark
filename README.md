@@ -38,14 +38,18 @@ Example
 ------------
   
 
-	# load example dataset
+	# load example dataset (note: this example is nonsensical and only for graphing purposes)
 	webuse stan3, clear
 	
-	# set data as sruvival data
+	# set data as survival data
 	stset t1, failure(died) id(id)
 	
+	# label treatment arms 
+	label define posttran_l 0 "prior transplantation" 1 "after transplantation"
+	label value posttran posttran_l
+	
 	# create landmark plot and table 
-	sts_graph_landmark, at(100) by(posttran)
+	sts_graph_landmark, at(200) by(posttran) risktable
 	
 Help and documentation
 ----------------------
