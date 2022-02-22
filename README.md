@@ -1,7 +1,7 @@
 # sts_graph_landmark
 Easily create Landmark Analysis graphs in Stata
 
-_v. 1.1.2_  
+_v. 1.1.3_  
 
 ![image](https://user-images.githubusercontent.com/22870774/133729652-f44a595b-cd5b-49a5-95e7-f83561ea4a1c.png)
 
