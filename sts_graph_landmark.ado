@@ -2,9 +2,9 @@
 ********************************************************************************	
 	Name:		sts_graph_landmark
 	Author:		Arnaud Künzi (arnaud.kuenzi@ctu.unibe.ch)
-	Version:	1.1.2
+	Version:	1.1.3
 	Creation:	2020.09.01
-	Last edit:	2022.01.13
+	Last edit:	2022.02.22
 	Description:
 		
 	Comments:
@@ -14,6 +14,10 @@
 		temporary variable __00008.
 
 	Changelog:
+	
+	-1.1.3 ON 2022.02.22
+		- Fixed bug in lcolor() where colors specified as other than a color name did not work
+		- Added support for lpattern()
 	
 	-1.1.2 ON 2022.01.13
 		- Fixed bug where option symbol() could not be invoked without 
@@ -76,7 +80,7 @@ program define sts_graph_landmark
 
 	version 16
 	
-	syntax [varlist(default=none)] [if] [in], [at(numlist >0) FAILure(varname) TItle(string) id(varname) by(varname) end(numlist max=1) YLABel(passthru) XLABel(passthru) LCOLors(string) RISKtable EVents risktableopts(string) SCale(real 0.8) FRFrom(string) usercmd(string) stsetopts(string) stslistopts(string) SHOWcmd KEEPplotdata *]
+	syntax [varlist(default=none)] [if] [in], [at(numlist >0) FAILure(varname) TItle(string) id(varname) by(varname) end(numlist max=1) YLABel(passthru) XLABel(passthru) LCOLors(passthru) LPATtern(passthru) RISKtable EVents risktableopts(string) SCale(real 0.8) FRFrom(string) usercmd(string) stsetopts(string) stslistopts(string) SHOWcmd KEEPplotdata *]
 
 	************* PARSING PARAMETERS AND SETTING DEFAULT VALUES *************
 	if ("`by'"		== ""){
@@ -170,10 +174,20 @@ program define sts_graph_landmark
 	}
 
 	*define K-M lines colors
-	if ("`lcolors'"	== ""){
+	if (`"`lcolors'"'	== ""){
 		*Palette taken from the ssc colorpalette Set1
 		local default_palette `""55 126 184" "228 26 28" "77 175 74" "152 78 163" "255 127 0" "255 255 51" "166 86 40" "247 129 191" "153 153 153""'
-												local lcolors `"`default_palette'"'
+		local lcolors `"`default_palette'"'
+	}
+	else{
+		*This needs to get rid of "^lcolor(" and ")$" due to option mode passthru. option mode string was getting rid of the quotes which did not let us specify colors un RGB, HSV and YMCK.
+		gettoken discard lcolors: lcolors, parse("(") bind match(parns)
+		gettoken lcolors discard: lcolors, parse("(") bind match(parns)
+	}
+	
+	if (`"`lpattern'"'	!= ""){
+		gettoken discard lpattern: lpattern, parse("(") bind match(parns)
+		gettoken lpattern discard: lpattern, parse("(") bind match(parns)
 	}
 	
 	*parse xlabel formatting options for the risktable
@@ -470,7 +484,7 @@ program define sts_graph_landmark
 					
 					if (`j' > 1 | `nlevels' == 1)	local twowaycmd `" || "'
 
-					local lmgraph `lmgraph' `twowaycmd' line failure`i'`j' time, `graphobs' lcolor("`:word `j' of `lcolors''") 
+					local lmgraph `lmgraph' `twowaycmd' line failure`i'`j' time, `graphobs' lcolor("`:word `j' of `lcolors''") lpattern("`:word `j' of `lpattern''") 
 				}
 				if (`i' > 1) local lmgraph `lmgraph' xline(`:word `i' of `atend'', lp(shortdash) lc(black)) //add  landmark delimitation vertical line 
 			}
